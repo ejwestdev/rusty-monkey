@@ -29,8 +29,32 @@ impl Lexer {
         self.read_position += 1;
     }
 
+    fn read_identifier(&mut self) -> String {
+        let start_position = self.position;
+        while (self.ch as char).is_ascii_alphabetic() {
+            self.read_char();
+        }
+        self.input[start_position..self.position].to_string()
+    }
+
+    fn skip_whitespace(&mut self) {
+        while matches!(self.ch as char, ' ' | '\t' | '\n' | '\r') {
+            self.read_char();
+        }
+    }
+
+    fn read_number(&mut self) -> String {
+        let start_position = self.position;
+        while (self.ch as char).is_ascii_digit() {
+            self.read_char();
+        }
+        self.input[start_position..self.position].to_string()
+    }
+
     pub fn next_token(&mut self) -> Token {
-        let tok = match self.ch as char {
+        self.skip_whitespace();
+        let letter = self.ch as char;
+        let tok = match letter {
             '=' => Token {
                 token_type: TokenType::Assign,
                 literal: "=".to_string(),
@@ -67,10 +91,26 @@ impl Lexer {
                 token_type: TokenType::Eof,
                 literal: "".to_string(),
             },
-            _ => Token {
-                token_type: TokenType::Illegal,
-                literal: (self.ch as char).to_string(),
-            },
+            _ => {
+                if letter.is_ascii_alphabetic() || letter == '_' {
+                    let ident = self.read_identifier();
+                    return Token {
+                        token_type: Token::lookup_ident(&ident),
+                        literal: ident,
+                    };
+                } else if letter.is_ascii_digit() {
+                    let num = self.read_number();
+                    return Token {
+                        token_type: TokenType::Int(num.clone()),
+                        literal: num,
+                    };
+                } else {
+                    Token {
+                        token_type: TokenType::Illegal,
+                        literal: letter.to_string(),
+                    }
+                }
+            }
         };
         self.read_char();
         tok

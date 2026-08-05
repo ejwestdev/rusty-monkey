@@ -39,7 +39,7 @@ impl fmt::Display for Token {
 }
 
 impl Token {
-    pub fn check_keyword_or_ident(value: &str) -> TokenType {
+    pub fn lookup_ident(value: &str) -> TokenType {
         match value {
             "fn" => TokenType::Function,
             "let" => TokenType::Let,

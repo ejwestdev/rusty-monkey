@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
-    use crate::lexer::Lexer;
-    use crate::token::TokenType;
+    use crate::lexer::lexer_impl::Lexer;
+    use crate::lexer::token::TokenType;
     #[test]
     fn test_next_token() {
         let input = "=+(){},;";
@@ -16,7 +16,7 @@ mod tests {
             (TokenType::Semicolon, ";".to_string()),
             (TokenType::Eof, "".to_string()),
         ];
-        let mut lexer = Lexer::new(input);
+        let mut lexer = Lexer::new(input.to_string());
         for (expected_type, expected_literal) in cases {
             let tok = lexer.next_token();
             assert_eq!(tok.token_type, expected_type);

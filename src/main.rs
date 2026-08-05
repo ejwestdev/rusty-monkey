@@ -1,5 +1,4 @@
-mod token;
-mod lexer_test;
+mod lexer;
 fn main() {
     println!("Hello, world!");
 }

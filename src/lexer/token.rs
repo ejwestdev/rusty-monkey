@@ -32,6 +32,11 @@ pub enum TokenType {
     //Keywords
     Function,
     Let,
+    True,
+    False,
+    If,
+    Else,
+    Return,
 }
 
 #[derive(Debug, PartialEq)]
@@ -50,6 +55,11 @@ impl Token {
         match value {
             "fn" => TokenType::Function,
             "let" => TokenType::Let,
+            "true" => TokenType::True,
+            "false" => TokenType::False,
+            "if" => TokenType::If,
+            "else" => TokenType::Else,
+            "return" => TokenType::Return,
             _ => TokenType::Ident(value.to_string()),
         }
     }

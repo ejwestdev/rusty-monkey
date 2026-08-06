@@ -13,6 +13,12 @@ let add = fn(x,  y) {
 let result = add(five, ten);
 !-/*5;
 5 < 10 > 5;
+
+if (5 < 10) {
+    return true;
+} else {
+    return false;
+}
 ";
         let cases = vec![
             (TokenType::Let, "let".to_string()),
@@ -63,6 +69,23 @@ let result = add(five, ten);
             (TokenType::Gt, ">".to_string()),
             (TokenType::Int("5".to_string()), "5".to_string()),
             (TokenType::Semicolon, ";".to_string()),
+            (TokenType::If, "if".to_string()),
+            (TokenType::Lparen, "(".to_string()),
+            (TokenType::Int("5".to_string()), "5".to_string()),
+            (TokenType::Lt, "<".to_string()),
+            (TokenType::Int("10".to_string()), "10".to_string()),
+            (TokenType::Rparen, ")".to_string()),
+            (TokenType::Lbrace, "{".to_string()),
+            (TokenType::Return, "return".to_string()),
+            (TokenType::True, "true".to_string()),
+            (TokenType::Semicolon, ";".to_string()),
+            (TokenType::Rbrace, "}".to_string()),
+            (TokenType::Else, "else".to_string()),
+            (TokenType::Lbrace, "{".to_string()),
+            (TokenType::Return, "return".to_string()),
+            (TokenType::False, "false".to_string()),
+            (TokenType::Semicolon, ";".to_string()),
+            (TokenType::Rbrace, "}".to_string()),
             (TokenType::Eof, "".to_string()),
         ];
         let mut lexer = Lexer::new(input.to_string());

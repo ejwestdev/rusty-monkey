@@ -51,14 +51,46 @@ impl Lexer {
         self.input[start_position..self.position].to_string()
     }
 
+    fn peek_char(&mut self) -> u8 {
+        if self.read_position >= self.input.len() {
+            0
+        } else {
+            self.input.as_bytes()[self.read_position]
+        }
+    }
+
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
         let letter = self.ch as char;
         let tok = match letter {
-            '=' => Token {
-                token_type: TokenType::Assign,
-                literal: "=".to_string(),
-            },
+            '=' => {
+                if self.peek_char() as char == '=' {
+                    self.read_char();
+                    Token {
+                        token_type: TokenType::Eq,
+                        literal: "==".to_string(),
+                    }
+                } else {
+                    Token {
+                        token_type: TokenType::Assign,
+                        literal: "=".to_string(),
+                    }
+                }
+            }
+            '!' => {
+                if self.peek_char() as char == '=' {
+                    self.read_char();
+                    Token {
+                        token_type: TokenType::NotEq,
+                        literal: "!=".to_string(),
+                    }
+                } else {
+                    Token {
+                        token_type: TokenType::Bang,
+                        literal: "!".to_string(),
+                    }
+                }
+            }
             '+' => Token {
                 token_type: TokenType::Plus,
                 literal: "+".to_string(),
@@ -66,10 +98,6 @@ impl Lexer {
             '-' => Token {
                 token_type: TokenType::Minus,
                 literal: "-".to_string(),
-            },
-            '!' => Token {
-                token_type: TokenType::Bang,
-                literal: "!".to_string(),
             },
             '/' => Token {
                 token_type: TokenType::Slash,

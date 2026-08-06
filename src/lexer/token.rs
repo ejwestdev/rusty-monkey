@@ -17,6 +17,9 @@ pub enum TokenType {
     Asterisk,
     Slash,
 
+    Eq,    // ==
+    NotEq, // !=
+
     Lt, //less than
     Gt, //greater than
 

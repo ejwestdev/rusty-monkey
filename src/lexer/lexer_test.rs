@@ -19,6 +19,9 @@ if (5 < 10) {
 } else {
     return false;
 }
+
+10 == 10;
+10 != 9;
 ";
         let cases = vec![
             (TokenType::Let, "let".to_string()),
@@ -86,6 +89,14 @@ if (5 < 10) {
             (TokenType::False, "false".to_string()),
             (TokenType::Semicolon, ";".to_string()),
             (TokenType::Rbrace, "}".to_string()),
+            (TokenType::Int("10".to_string()), "10".to_string()),
+            (TokenType::Eq, "==".to_string()),
+            (TokenType::Int("10".to_string()), "10".to_string()),
+            (TokenType::Semicolon, ";".to_string()),
+            (TokenType::Int("10".to_string()), "10".to_string()),
+            (TokenType::NotEq, "!=".to_string()),
+            (TokenType::Int("9".to_string()), "9".to_string()),
+            (TokenType::Semicolon, ";".to_string()),
             (TokenType::Eof, "".to_string()),
         ];
         let mut lexer = Lexer::new(input.to_string());

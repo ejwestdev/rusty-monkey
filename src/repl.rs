@@ -9,14 +9,13 @@ pub fn start<R: BufRead, W: Write>(reader: &mut R, writer: &mut W) {
     loop {
         writer
             .write_all(PROMPT.as_bytes())
-            .and_then(|_| writer.flush())
+            .and_then(|()| writer.flush())
             .expect("failed to write prompt");
 
         let mut line = String::new();
         match reader.read_line(&mut line) {
-            Ok(0) => return,
+            Ok(0) | Err(_) => return,
             Ok(_) => {}
-            Err(_) => return,
         }
 
         let mut lexer = Lexer::new(line);
@@ -26,7 +25,7 @@ pub fn start<R: BufRead, W: Write>(reader: &mut R, writer: &mut W) {
                 break;
             }
             writer
-                .write_all(format!("{:?}\n", tok).as_bytes())
+                .write_all(format!("{tok:?}\n").as_bytes())
                 .expect("failed to write token");
         }
     }

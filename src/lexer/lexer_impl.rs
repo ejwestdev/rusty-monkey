@@ -141,7 +141,7 @@ impl Lexer {
             },
             '\0' => Token {
                 token_type: TokenType::Eof,
-                literal: "".to_string(),
+                literal: String::new(),
             },
             _ => {
                 if letter.is_ascii_alphabetic() || letter == '_' {
@@ -156,11 +156,10 @@ impl Lexer {
                         token_type: TokenType::Int(num.clone()),
                         literal: num,
                     };
-                } else {
-                    Token {
-                        token_type: TokenType::Illegal,
-                        literal: letter.to_string(),
-                    }
+                }
+                Token {
+                    token_type: TokenType::Illegal,
+                    literal: letter.to_string(),
                 }
             }
         };

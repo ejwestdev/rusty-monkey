@@ -12,6 +12,13 @@ pub enum TokenType {
     //Operators
     Assign,
     Plus,
+    Minus,
+    Bang,
+    Asterisk,
+    Slash,
+
+    Lt, //less than
+    Gt, //greater than
 
     //Delimiters
     Comma,

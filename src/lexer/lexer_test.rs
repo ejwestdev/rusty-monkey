@@ -10,7 +10,10 @@ let add = fn(x,  y) {
     x + y;
 };
 
-let result = add(five, ten);";
+let result = add(five, ten);
+!-/*5;
+5 < 10 > 5;
+";
         let cases = vec![
             (TokenType::Let, "let".to_string()),
             (TokenType::Ident("five".to_string()), "five".to_string()),
@@ -47,6 +50,18 @@ let result = add(five, ten);";
             (TokenType::Comma, ",".to_string()),
             (TokenType::Ident("ten".to_string()), "ten".to_string()),
             (TokenType::Rparen, ")".to_string()),
+            (TokenType::Semicolon, ";".to_string()),
+            (TokenType::Bang, "!".to_string()),
+            (TokenType::Minus, "-".to_string()),
+            (TokenType::Slash, "/".to_string()),
+            (TokenType::Asterisk, "*".to_string()),
+            (TokenType::Int("5".to_string()), "5".to_string()),
+            (TokenType::Semicolon, ";".to_string()),
+            (TokenType::Int("5".to_string()), "5".to_string()),
+            (TokenType::Lt, "<".to_string()),
+            (TokenType::Int("10".to_string()), "10".to_string()),
+            (TokenType::Gt, ">".to_string()),
+            (TokenType::Int("5".to_string()), "5".to_string()),
             (TokenType::Semicolon, ";".to_string()),
             (TokenType::Eof, "".to_string()),
         ];

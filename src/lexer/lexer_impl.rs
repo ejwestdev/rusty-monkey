@@ -59,9 +59,41 @@ impl Lexer {
                 token_type: TokenType::Assign,
                 literal: "=".to_string(),
             },
+            '+' => Token {
+                token_type: TokenType::Plus,
+                literal: "+".to_string(),
+            },
+            '-' => Token {
+                token_type: TokenType::Minus,
+                literal: "-".to_string(),
+            },
+            '!' => Token {
+                token_type: TokenType::Bang,
+                literal: "!".to_string(),
+            },
+            '/' => Token {
+                token_type: TokenType::Slash,
+                literal: "/".to_string(),
+            },
+            '*' => Token {
+                token_type: TokenType::Asterisk,
+                literal: "*".to_string(),
+            },
+            '<' => Token {
+                token_type: TokenType::Lt,
+                literal: "<".to_string(),
+            },
+            '>' => Token {
+                token_type: TokenType::Gt,
+                literal: ">".to_string(),
+            },
             ';' => Token {
                 token_type: TokenType::Semicolon,
                 literal: ";".to_string(),
+            },
+            ',' => Token {
+                token_type: TokenType::Comma,
+                literal: ",".to_string(),
             },
             '(' => Token {
                 token_type: TokenType::Lparen,
@@ -70,14 +102,6 @@ impl Lexer {
             ')' => Token {
                 token_type: TokenType::Rparen,
                 literal: ")".to_string(),
-            },
-            ',' => Token {
-                token_type: TokenType::Comma,
-                literal: ",".to_string(),
-            },
-            '+' => Token {
-                token_type: TokenType::Plus,
-                literal: "+".to_string(),
             },
             '{' => Token {
                 token_type: TokenType::Lbrace,

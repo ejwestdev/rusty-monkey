@@ -1,4 +1,9 @@
+use std::io;
+use std::io::BufReader;
 mod lexer;
+mod repl;
 fn main() {
-    println!("Hello, world!");
+    let mut reader = BufReader::new(io::stdin());
+    let mut writer = io::stdout();
+    repl::start(&mut reader, &mut writer);
 }

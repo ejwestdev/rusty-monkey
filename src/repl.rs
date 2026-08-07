@@ -30,4 +30,3 @@ pub fn start<R: BufRead, W: Write>(reader: &mut R, writer: &mut W) {
         }
     }
 }
-

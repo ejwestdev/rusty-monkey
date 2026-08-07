@@ -1,6 +1,7 @@
 use std::io;
 use std::io::BufReader;
 mod lexer;
+mod parser;
 mod repl;
 fn main() {
     let mut reader = BufReader::new(io::stdin());

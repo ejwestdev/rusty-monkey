@@ -1,5 +1,5 @@
-use crate::lexer::token::Token;
-use crate::lexer::token::TokenType;
+use crate::token::Token;
+use crate::token::TokenType;
 
 pub struct Lexer {
     input: String,

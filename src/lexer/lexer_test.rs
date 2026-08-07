@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::lexer::lexer_impl::Lexer;
-    use crate::lexer::token::TokenType;
+    use crate::token::TokenType;
     #[test]
     fn test_next_token() {
         let input = "let five = 5;

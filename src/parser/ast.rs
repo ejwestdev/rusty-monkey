@@ -3,10 +3,11 @@ pub trait Node {
     fn token_literal(&self) -> String;
 }
 
+#[derive(Debug)]
 pub enum Statement {
     Let {
         token: token::TokenType,
-        //name: Identifier,
+        name: Identifier,
         value: Expression,
     },
     Return {
@@ -16,6 +17,12 @@ pub enum Statement {
     Expression(Expression),
 }
 
+#[derive(Debug)]
+pub struct Identifier {
+    token: token::Token,
+    value: String,
+}
+#[derive(Debug)]
 pub enum Expression {
     Identifier(String),
     Integer(i64),
@@ -23,12 +30,33 @@ pub enum Expression {
 
 impl Node for Statement {
     fn token_literal(&self) -> String {
-        todo!("implement token_literal for Statement")
+        match self {
+            Statement::Let { .. } => "let".to_string(),
+            Statement::Return { .. } => "return".to_string(),
+            Statement::Expression { .. } => "expression".to_string(),
+        }
     }
 }
 
 impl Node for Expression {
     fn token_literal(&self) -> String {
-        todo!("implement token_literal for Expression")
+        match self {
+            Expression::Identifier(..) => "identifier".to_string(),
+            Expression::Integer(..) => "integer".to_string(),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct Program {
+    statements: Vec<Statement>,
+}
+
+impl Node for Program {
+    fn token_literal(&self) -> String {
+        self.statements
+            .first()
+            .map(|s| s.token_literal())
+            .unwrap_or_default()
     }
 }

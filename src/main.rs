@@ -1,7 +1,7 @@
 use std::io;
 use std::io::BufReader;
-mod lexer;
-mod parser;
+mod lexing;
+mod parsing;
 mod token;
 mod repl;
 fn main() {

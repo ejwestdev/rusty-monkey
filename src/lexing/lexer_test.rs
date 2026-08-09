@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use crate::lexer::lexer_impl::Lexer;
+    use crate::lexing::lexer_impl::Lexer;
     use crate::token::TokenType;
     #[test]
     fn test_next_token() {

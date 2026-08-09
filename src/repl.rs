@@ -1,4 +1,4 @@
-use crate::lexer::lexer_impl::Lexer;
+use crate::lexing::lexer_impl::Lexer;
 use crate::token::TokenType;
 use std::io::BufRead;
 use std::io::Write;

@@ -8,6 +8,7 @@ pub struct Parser {
 
     pub cur_tok: token::Token,
     pub peek_tok: token::Token,
+    pub errors: Vec<String>,
 }
 
 impl Parser {
@@ -22,6 +23,7 @@ impl Parser {
                 token_type: token::TokenType::Illegal,
                 literal: String::new(),
             },
+            errors: vec![],
         };
         parser.next_token();
         parser.next_token();
@@ -30,6 +32,16 @@ impl Parser {
     fn next_token(&mut self) {
         self.cur_tok = self.peek_tok.clone();
         self.peek_tok = self.lexer.next_token();
+    }
+    fn peek_token(&self) -> token::Token {
+        self.peek_tok.clone()
+    }
+    fn peek_error(&mut self, t: TokenType) {
+        let msg = format!(
+            "Expected next token to be {:?}, got {:?} instead",
+            t, self.peek_tok.token_type
+        );
+        self.errors.push(msg)
     }
     pub fn parse_program(parser: &mut Parser) -> Option<Program> {
         let mut program: Program = Program { statements: vec![] };
@@ -49,16 +61,15 @@ impl Parser {
     }
 
     fn parse_let_statement(&mut self) -> Option<Statement> {
-        self.next_token();
-        let token::TokenType::Ident(name) = &self.cur_tok.token_type else {
+        let token::TokenType::Ident(name) = self.peek_token().token_type else {
             return None;
         };
-        let name = name.clone();
         self.next_token();
 
-        if self.cur_tok.token_type != token::TokenType::Assign {
+        if self.peek_token().token_type != token::TokenType::Assign {
             return None;
         }
+        self.next_token();
 
         while self.cur_tok.token_type != token::TokenType::Semicolon {
             self.next_token();

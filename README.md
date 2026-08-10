@@ -2,4 +2,4 @@ This is my implementation of the Monkey programming language in Rust. I am writi
 
 Monkey will support higher order functions, closures, strings, arrays, hashmaps, built-ins, arithmetic expressions and has C-like syntax. 
 
-Educational project based on Thorsten Bell's books.
+Educational project based on Thorsten Ball's books.

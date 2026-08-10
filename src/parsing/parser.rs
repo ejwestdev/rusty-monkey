@@ -1,6 +1,8 @@
 use crate::lexing::lexer_impl;
 use crate::parsing::ast::Program;
+use crate::parsing::ast::Statement;
 use crate::token;
+use crate::token::Token;
 
 pub struct Parser {
     pub lexer: lexer_impl::Lexer,
@@ -31,7 +33,30 @@ impl Parser {
         self.cur_tok = self.peek_tok.clone();
         self.peek_tok = self.lexer.next_token();
     }
-    pub fn parse_program(parser: Parser) -> Option<Program> {
-        todo!("parse_program")
+    pub fn parse_program(parser: &mut Parser) -> Option<Program> {
+        let mut program: Program = Program { statements: vec![] };
+        while parser.cur_tok.token_type != token::TokenType::Eof {
+            if let Some(statement) = parser.parse_statement() {
+                program.statements.push(statement);
+            }
+            parser.next_token();
+        }
+        Some(program)
+    }
+    fn parse_statement(&mut self) -> Option<Statement> {
+        match self.cur_tok.token_type {
+            token::TokenType::Let => self.parse_let_statement(),
+            _ => None,
+        }
+    }
+
+    fn parse_let_statement(&mut self) -> Option<Statement> {
+        let statement = self.parse_statement().unwrap();
+        match self.tok
+        todo!()
+    }
+
+    fn expect_peek(self, tt: token::TokenType) -> bool {
+        todo!()
     }
 }

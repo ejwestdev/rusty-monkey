@@ -12,9 +12,9 @@ mod tests {
         let foobar = 838383;
         ";
         let lexer = Lexer::new(input.to_string());
-        let parser = Parser::new(lexer);
+        let mut parser = Parser::new(lexer);
 
-        let program = match Parser::parse_program(parser) {
+        let program = match Parser::parse_program(&mut parser) {
             Some(program) => program,
             None => panic!("parse_program returned None"),
         };
@@ -29,4 +29,3 @@ mod tests {
         }
     }
 }
-

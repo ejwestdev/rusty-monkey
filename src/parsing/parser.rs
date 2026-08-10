@@ -1,8 +1,7 @@
 use crate::lexing::lexer_impl;
-use crate::parsing::ast::Program;
-use crate::parsing::ast::Statement;
+use crate::parsing::ast::{Expression, Identifier, Program, Statement};
 use crate::token;
-use crate::token::Token;
+use crate::token::TokenType;
 
 pub struct Parser {
     pub lexer: lexer_impl::Lexer,
@@ -13,7 +12,6 @@ pub struct Parser {
 
 impl Parser {
     pub fn new(mut lexer: lexer_impl::Lexer) -> Parser {
-        let next_tok = lexer.next_token();
         let mut parser = Parser {
             lexer,
             cur_tok: token::Token {
@@ -51,12 +49,31 @@ impl Parser {
     }
 
     fn parse_let_statement(&mut self) -> Option<Statement> {
-        let statement = self.parse_statement().unwrap();
-        match self.tok
-        todo!()
-    }
+        self.next_token();
+        let token::TokenType::Ident(name) = &self.cur_tok.token_type else {
+            return None;
+        };
+        let name = name.clone();
+        self.next_token();
 
-    fn expect_peek(self, tt: token::TokenType) -> bool {
-        todo!()
+        if self.cur_tok.token_type != token::TokenType::Assign {
+            return None;
+        }
+
+        while self.cur_tok.token_type != token::TokenType::Semicolon {
+            self.next_token();
+        }
+
+        Some(Statement::Let {
+            token: token::TokenType::Let,
+            name: Identifier {
+                token: token::Token {
+                    token_type: token::TokenType::Ident(name.clone()),
+                    literal: name.clone(),
+                },
+                value: name,
+            },
+            value: Expression::Integer(0),
+        })
     }
 }

@@ -19,12 +19,12 @@ pub enum Statement {
 
 #[derive(Debug)]
 pub struct Identifier {
-    token: token::Token,
-    value: String,
+    pub token: token::Token,
+    pub value: String,
 }
 
 impl Identifier {
-    pub fn value(&self) -> &str {
+    pub fn value(&self) -> &String {
         &self.value
     }
 }

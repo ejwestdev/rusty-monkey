@@ -1,4 +1,5 @@
 use crate::lexing::lexer_impl;
+use crate::parsing::ast::Program;
 use crate::token;
 
 pub struct Parser {
@@ -29,5 +30,8 @@ impl Parser {
     fn next_token(&mut self) {
         self.cur_tok = self.peek_tok.clone();
         self.peek_tok = self.lexer.next_token();
+    }
+    pub fn parse_program(parser: Parser) -> Option<Program> {
+        todo!("parse_program")
     }
 }

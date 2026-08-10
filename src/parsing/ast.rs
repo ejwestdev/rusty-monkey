@@ -22,6 +22,12 @@ pub struct Identifier {
     token: token::Token,
     value: String,
 }
+
+impl Identifier {
+    pub fn value(&self) -> &str {
+        &self.value
+    }
+}
 #[derive(Debug)]
 pub enum Expression {
     Identifier(String),
@@ -49,7 +55,7 @@ impl Node for Expression {
 
 #[derive(Debug)]
 pub struct Program {
-    statements: Vec<Statement>,
+    pub statements: Vec<Statement>,
 }
 
 impl Node for Program {

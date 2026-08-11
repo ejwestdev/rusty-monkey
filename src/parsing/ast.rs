@@ -14,7 +14,10 @@ pub enum Statement {
         token: token::TokenType,
         return_value: Expression,
     },
-    Expression(Expression),
+    Expression {
+        token: token::Token,
+        expression: Expression,
+    },
 }
 
 #[derive(Debug)]

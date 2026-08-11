@@ -65,12 +65,14 @@ impl Parser {
         let token::TokenType::Ident(name) = self.peek_token().token_type else {
             return None;
         };
-        self.next_token();
 
-        if self.peek_token().token_type != token::TokenType::Assign {
+        if !Self::expect_peek(self, token::TokenType::Ident(name.clone())) {
             return None;
         }
-        self.next_token();
+
+        if !Self::expect_peek(self, token::TokenType::Assign) {
+            return None;
+        }
 
         while self.cur_tok.token_type != token::TokenType::Semicolon {
             self.next_token();

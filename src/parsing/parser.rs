@@ -88,4 +88,14 @@ impl Parser {
             value: Expression::Integer(0),
         })
     }
+
+    fn expect_peek(parser: &mut Parser, tok_type: TokenType) -> bool {
+        if parser.peek_token().token_type == tok_type {
+            parser.next_token();
+            true
+        } else {
+            parser.peek_error(tok_type);
+            false
+        }
+    }
 }

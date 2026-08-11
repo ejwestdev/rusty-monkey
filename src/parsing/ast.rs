@@ -1,6 +1,13 @@
 use crate::token;
+
 pub trait Node {
     fn token_literal(&self) -> String;
+}
+
+#[derive(Debug)]
+pub struct Identifier {
+    pub token: token::Token,
+    pub value: String,
 }
 
 #[derive(Debug)]
@@ -21,20 +28,57 @@ pub enum Statement {
 }
 
 #[derive(Debug)]
-pub struct Identifier {
-    pub token: token::Token,
-    pub value: String,
+pub enum Expression {
+    Identifier(String),
+    Integer(i64),
+}
+
+#[derive(Debug)]
+pub struct Program {
+    pub statements: Vec<Statement>,
 }
 
 impl Identifier {
     pub fn value(&self) -> &String {
         &self.value
     }
+    pub fn string(&self) -> String {
+        self.value.clone()
+    }
 }
-#[derive(Debug)]
-pub enum Expression {
-    Identifier(String),
-    Integer(i64),
+
+impl Statement {
+    pub fn string(&self) -> String {
+        match self {
+            Statement::Let { name, value, .. } => format!(
+                "{} {} = {};",
+                self.token_literal(),
+                name.string(),
+                value.string()
+            ),
+            Statement::Return { .. } => "return".to_string(),
+            Statement::Expression { .. } => "expression".to_string(),
+        }
+    }
+}
+
+impl Expression {
+    pub fn string(&self) -> String {
+        match self {
+            Expression::Identifier(s) => s.clone(),
+            Expression::Integer(n) => n.to_string(),
+        }
+    }
+}
+
+impl Program {
+    pub fn string(&self) -> String {
+        self.statements
+            .iter()
+            .map(|s| s.string())
+            .collect::<Vec<String>>()
+            .join("")
+    }
 }
 
 impl Node for Statement {
@@ -54,11 +98,6 @@ impl Node for Expression {
             Expression::Integer(..) => "integer".to_string(),
         }
     }
-}
-
-#[derive(Debug)]
-pub struct Program {
-    pub statements: Vec<Statement>,
 }
 
 impl Node for Program {

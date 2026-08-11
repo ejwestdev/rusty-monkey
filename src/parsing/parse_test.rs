@@ -7,7 +7,7 @@ mod tests {
     #[test]
     fn test_let_statement() {
         let input = "
-        let x = 5;
+        let x 5;
         let y = 10;
         let foobar = 838383;
         ";
@@ -37,6 +37,10 @@ mod tests {
             .iter()
             .map(|msg| format!("parser error: {msg:?}"))
             .collect();
-        panic!("parser has {} errors:\n{}", errors.len(), messages.join("\n"));
+        panic!(
+            "parser has {} errors:\n{}",
+            errors.len(),
+            messages.join("\n")
+        );
     }
 }

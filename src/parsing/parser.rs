@@ -3,6 +3,7 @@ use crate::parsing::ast::{Expression, Identifier, Program, Statement};
 use crate::token;
 use crate::token::TokenType;
 
+#[derive(Clone)]
 pub struct Parser {
     pub lexer: lexer_impl::Lexer,
 

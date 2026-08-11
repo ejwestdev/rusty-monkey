@@ -13,11 +13,11 @@ mod tests {
         ";
         let lexer = Lexer::new(input.to_string());
         let mut parser = Parser::new(lexer);
-
         let program = match Parser::parse_program(&mut parser) {
             Some(program) => program,
             None => panic!("parse_program returned None"),
         };
+        check_parser_errors(&parser);
 
         assert_eq!(program.statements.len(), 3);
         let expected = ["x", "y", "foobar"];
@@ -27,5 +27,16 @@ mod tests {
             };
             assert_eq!(&name.value(), ident);
         }
+    }
+    fn check_parser_errors(parser: &Parser) {
+        let errors = &parser.errors;
+        if errors.is_empty() {
+            return;
+        }
+        let messages: Vec<String> = errors
+            .iter()
+            .map(|msg| format!("parser error: {msg:?}"))
+            .collect();
+        panic!("parser has {} errors:\n{}", errors.len(), messages.join("\n"));
     }
 }

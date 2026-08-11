@@ -9,7 +9,7 @@ mod tests {
                 token: TokenType::Let,
                 name: Identifier {
                     token: Token {
-                        token_type: TokenType::Ident("myVar".to_string()),
+                        token_type: TokenType::Ident,
                         literal: "myVar".to_string(),
                     },
                     value: "myVar".to_string(),

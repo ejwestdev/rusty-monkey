@@ -86,7 +86,7 @@ impl Node for Statement {
         match self {
             Statement::Let { .. } => "let".to_string(),
             Statement::Return { .. } => "return".to_string(),
-            Statement::Expression { .. } => "expression".to_string(),
+            Statement::Expression { expression, .. } => expression.token_literal().clone(),
         }
     }
 }
@@ -94,8 +94,8 @@ impl Node for Statement {
 impl Node for Expression {
     fn token_literal(&self) -> String {
         match self {
-            Expression::Identifier(..) => "identifier".to_string(),
-            Expression::Integer(..) => "integer".to_string(),
+            Expression::Identifier(s) => s.clone(),
+            Expression::Integer(n) => n.to_string(),
         }
     }
 }

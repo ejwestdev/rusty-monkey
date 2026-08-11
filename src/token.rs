@@ -1,13 +1,13 @@
 use std::fmt;
 use std::fmt::Formatter;
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Eq, Hash, Debug, PartialEq, Clone)]
 pub enum TokenType {
     Illegal,
     Eof,
 
     //Identifiers + literals
-    Ident(String),
-    Int(String),
+    Ident,
+    Int,
 
     //Operators
     Assign,
@@ -63,7 +63,7 @@ impl Token {
             "if" => TokenType::If,
             "else" => TokenType::Else,
             "return" => TokenType::Return,
-            _ => TokenType::Ident(value.to_string()),
+            _ => TokenType::Ident,
         }
     }
 }

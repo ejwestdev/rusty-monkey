@@ -52,6 +52,26 @@ mod tests {
             assert_eq!(stmt.token_literal(), "return");
         }
     }
+    #[test]
+    fn test_identifier_expression() {
+        let input = "foobar;".to_string();
+        let lexer = Lexer::new(input.to_string());
+        let mut parser = Parser::new(lexer);
+        let program = match Parser::parse_program(&mut parser) {
+            Some(program) => program,
+            None => panic!("parse_program returned None in test_identifier_expression"),
+        };
+        check_parser_errors(&parser);
+        assert_eq!(program.statements.len(), 1);
+
+        for stmt in &program.statements {
+            let Statement::Expression { .. } = stmt else {
+                panic!("statement not Statement::Expression. got={stmt:?}");
+            };
+            assert_eq!(stmt.token_literal(), "foobar");
+        }
+    }
+
     fn check_parser_errors(parser: &Parser) {
         let errors = &parser.errors;
         if errors.is_empty() {

@@ -154,7 +154,7 @@ impl Lexer {
                 } else if letter.is_ascii_digit() {
                     let num = self.read_number();
                     return Token {
-                        token_type: TokenType::Int(num.clone()),
+                        token_type: TokenType::Int,
                         literal: num,
                     };
                 }

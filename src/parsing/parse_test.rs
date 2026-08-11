@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::lexing::lexer_impl::Lexer;
-    use crate::parsing::ast::Statement;
+    use crate::parsing::ast::{Node, Statement};
     use crate::parsing::parser::Parser;
 
     #[test]
@@ -15,7 +15,7 @@ mod tests {
         let mut parser = Parser::new(lexer);
         let program = match Parser::parse_program(&mut parser) {
             Some(program) => program,
-            None => panic!("parse_program returned None"),
+            None => panic!("parse_program returned None in test_let_statement"),
         };
         check_parser_errors(&parser);
 
@@ -26,6 +26,30 @@ mod tests {
                 panic!("statement {} is not a Let", i);
             };
             assert_eq!(&name.value(), ident);
+        }
+    }
+    #[test]
+    fn test_return_statement() {
+        let input = "
+        return 5;
+        return 10;
+        return 993322;
+";
+        let lexer = Lexer::new(input.to_string());
+        let mut parser = Parser::new(lexer);
+        let program = match Parser::parse_program(&mut parser) {
+            Some(program) => program,
+            None => panic!("parse_program returned none in test_return_statement"),
+        };
+        check_parser_errors(&parser);
+
+        assert_eq!(program.statements.len(), 3);
+
+        for stmt in &program.statements {
+            let Statement::Return { .. } = stmt else {
+                panic!("statement not *ast.ReturnStatement. got={stmt:?}");
+            };
+            assert_eq!(stmt.token_literal(), "return");
         }
     }
     fn check_parser_errors(parser: &Parser) {

@@ -7,7 +7,7 @@ mod tests {
     #[test]
     fn test_let_statement() {
         let input = "
-        let x 5;
+        let x = 5;
         let y = 10;
         let foobar = 838383;
         ";
@@ -47,7 +47,7 @@ mod tests {
 
         for stmt in &program.statements {
             let Statement::Return { .. } = stmt else {
-                panic!("statement not *ast.ReturnStatement. got={stmt:?}");
+                panic!("statement not Statement::Return. got={stmt:?}");
             };
             assert_eq!(stmt.token_literal(), "return");
         }

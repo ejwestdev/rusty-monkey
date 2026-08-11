@@ -57,12 +57,20 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<Statement> {
         match self.cur_tok.token_type {
             token::TokenType::Let => self.parse_let_statement(),
+            token::TokenType::Return => self.parse_return_statement(),
             _ => None,
         }
     }
 
-    
-
+    fn parse_return_statement(&mut self) -> Option<Statement> {
+        while self.cur_tok.token_type != token::TokenType::Semicolon {
+            self.next_token();
+        }
+        Some(Statement::Return {
+            token: token::TokenType::Return,
+            return_value: Expression::Integer(0),
+        })
+    }
     fn parse_let_statement(&mut self) -> Option<Statement> {
         let token::TokenType::Ident(name) = self.peek_token().token_type else {
             return None;

@@ -35,6 +35,11 @@ pub enum Expression {
         operator: String,
         right: Box<Expression>,
     },
+    Infix {
+        left: Box<Expression>,
+        operator: String,
+        right: Box<Expression>,
+    },
 }
 
 #[derive(Debug)]
@@ -74,6 +79,15 @@ impl Expression {
             Expression::Prefix { operator, right } => {
                 format!("({operator}{})", right.string())
             }
+            Expression::Infix {
+                left,
+                operator,
+                right,
+            } => format!(
+                "({} {operator} {})",
+                left.string(),
+                right.string()
+            ),
         }
     }
 }
@@ -104,6 +118,7 @@ impl Node for Expression {
             Expression::Identifier(s) => s.clone(),
             Expression::Integer(n) => n.to_string(),
             Expression::Prefix { right, .. } => right.token_literal(),
+            Expression::Infix { left, .. } => left.token_literal(),
         }
     }
 }

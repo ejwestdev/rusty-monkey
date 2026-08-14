@@ -118,6 +118,52 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_parsing_infix_expressions() {
+        let infix_tests = vec![
+            ("5 + 5;", 5i64, "+", 5i64),
+            ("5 - 5;", 5, "-", 5),
+            ("5 * 5;", 5, "*", 5),
+            ("5 / 5;", 5, "/", 5),
+            ("5 > 5;", 5, ">", 5),
+            ("5 < 5;", 5, "<", 5),
+            ("5 == 5;", 5, "==", 5),
+            ("5 != 5;", 5, "!=", 5),
+        ];
+        for (input, expected_left, expected_operator, expected_right) in infix_tests {
+            let lexer = Lexer::new(input.to_string());
+            let mut parser = Parser::new(lexer);
+            let program = Parser::parse_program(&mut parser)
+                .expect("parse_program returned None in test_parsing_infix_expressions");
+            check_parser_errors(&parser);
+
+            assert_eq!(program.statements.len(), 1);
+
+            let Some(Statement::Expression { expression, .. }) = program.statements.first() else {
+                panic!("program.statements is empty");
+            };
+            let Expression::Infix {
+                left,
+                operator,
+                right,
+            } = expression
+            else {
+                panic!("expression is not an Infix. got={expression:?}");
+            };
+            assert_eq!(operator, expected_operator);
+
+            let Expression::Integer(left_value) = **left else {
+                panic!("left is not an Integer. got={left:?}");
+            };
+            assert_eq!(left_value, expected_left);
+
+            let Expression::Integer(right_value) = **right else {
+                panic!("right is not an Integer. got={right:?}");
+            };
+            assert_eq!(right_value, expected_right);
+        }
+    }
+
     fn check_parser_errors(parser: &Parser) {
         let errors = &parser.errors;
         if errors.is_empty() {

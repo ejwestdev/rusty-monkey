@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests {
     use crate::lexing::lexer_impl::Lexer;
-    use crate::parsing::ast::{Node, Statement};
+    use crate::parsing::ast::{Expression, Node, Statement};
     use crate::parsing::parser::Parser;
 
     #[test]
@@ -67,6 +67,35 @@ mod tests {
                 panic!("statement not Statement::Return. got={stmt:?}");
             };
             assert_eq!(stmt.token_literal(), "return");
+        }
+    }
+    #[test]
+    fn test_parsing_prefix_expressions() {
+        let prefix_tests = vec![
+            ("!5;", "!", 5i64),
+            ("-15;", "-", 15i64),
+        ];
+        for (input, expected_operator, expected_value) in prefix_tests {
+            let lexer = Lexer::new(input.to_string());
+            let mut parser = Parser::new(lexer);
+            let program = Parser::parse_program(&mut parser)
+                .expect("parse_program returned None in test_parsing_prefix_expressions");
+            check_parser_errors(&parser);
+
+            assert_eq!(program.statements.len(), 1);
+
+            let Some(Statement::Expression { expression, .. }) = program.statements.first() else {
+                panic!("program.statements is empty");
+            };
+            let Expression::Prefix { operator, right } = expression else {
+                panic!("expression is not a Prefix. got={expression:?}");
+            };
+            assert_eq!(operator, expected_operator);
+
+            let Expression::Integer(value) = **right else {
+                panic!("right is not an Integer. got={right:?}");
+            };
+            assert_eq!(value, expected_value);
         }
     }
     #[test]

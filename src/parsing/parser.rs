@@ -47,6 +47,9 @@ impl Parser {
         parser.next_token();
         parser.register_prefix(token::TokenType::Ident, Parser::parse_identifier);
         parser.register_prefix(token::TokenType::Int, Parser::parse_integer_literal);
+        parser.register_prefix(token::TokenType::Bang, Parser::parse_prefix_expression);
+        parser
+            .register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
         parser
     }
     fn register_prefix(&mut self, t: TokenType, f: PrefixParseFn) {
@@ -106,6 +109,15 @@ impl Parser {
         Some(Expression::Integer(
             parser.cur_tok.literal.parse::<i64>().ok()?,
         ))
+    }
+    fn parse_prefix_expression(parser: &mut Parser) -> Option<Expression> {
+        let operator = parser.cur_tok.literal.clone();
+        parser.next_token();
+        let right = parser.parse_expression(Precedence::Prefix)?;
+        Some(Expression::Prefix {
+            operator,
+            right: Box::new(right),
+        })
     }
 
     fn parse_return_statement(&mut self) -> Option<Statement> {

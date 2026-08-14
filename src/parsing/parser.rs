@@ -103,7 +103,9 @@ impl Parser {
         Some(Expression::Identifier(parser.cur_tok.literal.clone()))
     }
     fn parse_integer_literal(parser: &mut Parser) -> Option<Expression> {
-        Some(Expression::Integer(parser.cur_tok.literal.parse::<i64>().ok()?))
+        Some(Expression::Integer(
+            parser.cur_tok.literal.parse::<i64>().ok()?,
+        ))
     }
 
     fn parse_return_statement(&mut self) -> Option<Statement> {

@@ -29,6 +29,23 @@ mod tests {
         }
     }
     #[test]
+    fn test_integer_literal_expression() {
+        let input = "5;";
+        let lexer = Lexer::new(input.to_string());
+        let mut parser = Parser::new(lexer);
+        let program = match Parser::parse_program(&mut parser) {
+            Some(program) => program,
+            None => panic!("parse_program returned None in test_integer_literal_expression"),
+        };
+        assert_eq!(program.statements.len(), 1);
+        for stmt in &program.statements {
+            let Statement::Expression { .. } = stmt else {
+                panic!("Statement not Statement::Expression, got {stmt:?} instead");
+            };
+            assert_eq!(stmt.token_literal(), "5");
+        }
+    }
+    #[test]
     fn test_return_statement() {
         let input = "
         return 5;

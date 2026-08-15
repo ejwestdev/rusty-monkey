@@ -96,9 +96,8 @@ impl Program {
     pub fn string(&self) -> String {
         self.statements
             .iter()
-            .map(|s| s.string())
-            .collect::<Vec<String>>()
-            .join("")
+            .map(Statement::string)
+            .collect::<String>()
     }
 }
 
@@ -127,7 +126,7 @@ impl Node for Program {
     fn token_literal(&self) -> String {
         self.statements
             .first()
-            .map(|s| s.token_literal())
+            .map(Node::token_literal)
             .unwrap_or_default()
     }
 }

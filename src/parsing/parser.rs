@@ -28,7 +28,7 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn new(mut lexer: lexer_impl::Lexer) -> Parser {
+    pub fn new(lexer: lexer_impl::Lexer) -> Parser {
         let mut parser = Parser {
             lexer,
             errors: vec![],
@@ -48,19 +48,15 @@ impl Parser {
         parser.register_prefix(token::TokenType::Ident, Parser::parse_identifier);
         parser.register_prefix(token::TokenType::Int, Parser::parse_integer_literal);
         parser.register_prefix(token::TokenType::Bang, Parser::parse_prefix_expression);
-        parser
-            .register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
+        parser.register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
         parser.register_infix(token::TokenType::Plus, Parser::parse_infix_expression);
-        parser
-            .register_infix(token::TokenType::Minus, Parser::parse_infix_expression);
-        parser
-            .register_infix(token::TokenType::Asterisk, Parser::parse_infix_expression);
+        parser.register_infix(token::TokenType::Minus, Parser::parse_infix_expression);
+        parser.register_infix(token::TokenType::Asterisk, Parser::parse_infix_expression);
         parser.register_infix(token::TokenType::Slash, Parser::parse_infix_expression);
         parser.register_infix(token::TokenType::Lt, Parser::parse_infix_expression);
         parser.register_infix(token::TokenType::Gt, Parser::parse_infix_expression);
         parser.register_infix(token::TokenType::Eq, Parser::parse_infix_expression);
-        parser
-            .register_infix(token::TokenType::NotEq, Parser::parse_infix_expression);
+        parser.register_infix(token::TokenType::NotEq, Parser::parse_infix_expression);
         parser
     }
     fn register_prefix(&mut self, t: TokenType, f: PrefixParseFn) {
@@ -81,7 +77,7 @@ impl Parser {
             "Expected next token to be {:?}, got {:?} instead",
             t, self.peek_tok.token_type
         );
-        self.errors.push(msg)
+        self.errors.push(msg);
     }
     pub fn parse_program(parser: &mut Parser) -> Option<Program> {
         let mut program: Program = Program { statements: vec![] };
@@ -96,7 +92,7 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<Statement> {
         match self.cur_tok.token_type {
             token::TokenType::Let => self.parse_let_statement(),
-            token::TokenType::Return => self.parse_return_statement(),
+            token::TokenType::Return => Some(self.parse_return_statement()),
             _ => self.parse_expression_statement(),
         }
     }
@@ -151,10 +147,10 @@ impl Parser {
         })
     }
     fn peek_precedence(&self) -> Precedence {
-        self.precedence_for(self.peek_tok.token_type.clone())
+        self.precedence_for(self.peek_tok.token_type)
     }
     fn cur_precedence(&self) -> Precedence {
-        self.precedence_for(self.cur_tok.token_type.clone())
+        self.precedence_for(self.cur_tok.token_type)
     }
     fn precedence_for(&self, token_type: TokenType) -> Precedence {
         match token_type {
@@ -166,14 +162,14 @@ impl Parser {
         }
     }
 
-    fn parse_return_statement(&mut self) -> Option<Statement> {
+    fn parse_return_statement(&mut self) -> Statement {
         while self.cur_tok.token_type != token::TokenType::Semicolon {
             self.next_token();
         }
-        Some(Statement::Return {
+        Statement::Return {
             token: token::TokenType::Return,
             return_value: Expression::Integer(0),
-        })
+        }
     }
     fn parse_let_statement(&mut self) -> Option<Statement> {
         let name = self.peek_token().literal.clone();

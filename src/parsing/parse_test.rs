@@ -164,6 +164,32 @@ mod tests {
         }
     }
 
+    #[test]
+    fn test_parsing_boolean_expressions() {
+        for (input, expected) in [("true;", true), ("false;", false)] {
+            let lexer = Lexer::new(input.to_string());
+            let mut parser = Parser::new(lexer);
+            let program = Parser::parse_program(&mut parser)
+                .expect("parse_program returned None in test_parsing_boolean_expressions");
+            check_parser_errors(&parser);
+
+            assert_eq!(program.statements.len(), 1);
+            let Some(Statement::Expression { expression, .. }) = program.statements.first() else {
+                panic!("program.statements is empty");
+            };
+            let Expression::Boolean(value) = expression else {
+                panic!("expression is not a Boolean. got={expression:?}");
+            };
+            assert_eq!(*value, expected);
+            assert_eq!(stmt_token_literal(expression), input.trim_end_matches(';'));
+        }
+    }
+
+    fn stmt_token_literal(expression: &Expression) -> String {
+        use crate::parsing::ast::Node;
+        expression.token_literal()
+    }
+
     fn check_parser_errors(parser: &Parser) {
         let errors = &parser.errors;
         if errors.is_empty() {

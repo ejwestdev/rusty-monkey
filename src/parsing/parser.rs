@@ -47,6 +47,8 @@ impl Parser {
         parser.next_token();
         parser.register_prefix(token::TokenType::Ident, Parser::parse_identifier);
         parser.register_prefix(token::TokenType::Int, Parser::parse_integer_literal);
+        parser.register_prefix(token::TokenType::True, Parser::parse_boolean);
+        parser.register_prefix(token::TokenType::False, Parser::parse_boolean);
         parser.register_prefix(token::TokenType::Bang, Parser::parse_prefix_expression);
         parser.register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
         parser.register_infix(token::TokenType::Plus, Parser::parse_infix_expression);
@@ -124,6 +126,11 @@ impl Parser {
     fn parse_integer_literal(parser: &mut Parser) -> Option<Expression> {
         Some(Expression::Integer(
             parser.cur_tok.literal.parse::<i64>().ok()?,
+        ))
+    }
+    fn parse_boolean(parser: &mut Parser) -> Option<Expression> {
+        Some(Expression::Boolean(
+            parser.cur_tok.token_type == token::TokenType::True,
         ))
     }
     fn parse_prefix_expression(parser: &mut Parser) -> Option<Expression> {

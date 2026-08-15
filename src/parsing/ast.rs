@@ -31,6 +31,7 @@ pub enum Statement {
 pub enum Expression {
     Identifier(String),
     Integer(i64),
+    Boolean(bool),
     Prefix {
         operator: String,
         right: Box<Expression>,
@@ -55,7 +56,6 @@ impl Identifier {
         self.value.clone()
     }
 }
-
 impl Statement {
     pub fn string(&self) -> String {
         match self {
@@ -76,6 +76,7 @@ impl Expression {
         match self {
             Expression::Identifier(s) => s.clone(),
             Expression::Integer(n) => n.to_string(),
+            Expression::Boolean(value) => value.to_string(),
             Expression::Prefix { operator, right } => {
                 format!("({operator}{})", right.string())
             }
@@ -83,11 +84,7 @@ impl Expression {
                 left,
                 operator,
                 right,
-            } => format!(
-                "({} {operator} {})",
-                left.string(),
-                right.string()
-            ),
+            } => format!("({} {operator} {})", left.string(), right.string()),
         }
     }
 }
@@ -116,6 +113,7 @@ impl Node for Expression {
         match self {
             Expression::Identifier(s) => s.clone(),
             Expression::Integer(n) => n.to_string(),
+            Expression::Boolean(value) => value.to_string(),
             Expression::Prefix { right, .. } => right.token_literal(),
             Expression::Infix { left, .. } => left.token_literal(),
         }

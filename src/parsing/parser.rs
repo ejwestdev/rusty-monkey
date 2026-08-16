@@ -103,7 +103,7 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<Statement> {
         match self.cur_tok.token_type {
             token::TokenType::Let => self.parse_let_statement(),
-            token::TokenType::Return => Some(self.parse_return_statement()),
+            token::TokenType::Return => self.parse_return_statement(),
             _ => self.parse_expression_statement(),
         }
     }
@@ -267,14 +267,16 @@ impl Parser {
         }
     }
 
-    fn parse_return_statement(&mut self) -> Statement {
-        while self.cur_tok.token_type != token::TokenType::Semicolon {
+    fn parse_return_statement(&mut self) -> Option<Statement> {
+        self.next_token();
+        let return_value = self.parse_expression(Precedence::Lowest)?;
+        if self.peek_token_is(token::TokenType::Semicolon) {
             self.next_token();
         }
-        Statement::Return {
+        Some(Statement::Return {
             token: token::TokenType::Return,
-            return_value: Expression::Integer(0),
-        }
+            return_value,
+        })
     }
     fn parse_let_statement(&mut self) -> Option<Statement> {
         let name = self.peek_token().literal.clone();
@@ -287,7 +289,10 @@ impl Parser {
             return None;
         }
 
-        while self.cur_tok.token_type != token::TokenType::Semicolon {
+        self.next_token();
+        let value = self.parse_expression(Precedence::Lowest)?;
+
+        if self.peek_token_is(token::TokenType::Semicolon) {
             self.next_token();
         }
 
@@ -300,7 +305,7 @@ impl Parser {
                 },
                 value: name,
             },
-            value: Expression::Integer(0),
+            value,
         })
     }
 

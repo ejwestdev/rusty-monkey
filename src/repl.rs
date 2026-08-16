@@ -1,6 +1,5 @@
 use crate::lexing::lexer_impl::Lexer;
 use crate::parsing::parser::Parser;
-use crate::token::TokenType;
 use std::io::BufRead;
 use std::io::Write;
 
@@ -28,30 +27,34 @@ pub fn start<R: BufRead, W: Write>(reader: &mut R, writer: &mut W) {
             Ok(_) => {}
         }
 
-        let mut lexer = Lexer::new(line);
-        let mut parser = Parser::new(lexer.clone());
+        let lexer = Lexer::new(line);
+        let mut parser = Parser::new(lexer);
         if let Some(program) = Parser::parse_program(&mut parser) {
             if parser.errors.is_empty() {
                 writer
-                    .write_all(format!("{program:?}\n").as_bytes())
+                    .write_all(program.string().as_bytes())
                     .expect("failed to write program");
+                writer.write_all(b"\n").expect("failed to write newline");
             } else {
-                for err in &parser.errors {
-                    writer.write_all(MONKEY_FACE.as_bytes()).expect("monkey");
-                    writer
-                        .write_all(format!("\t{err}\n").as_bytes())
-                        .expect("failed to write error");
-                }
+                print_parser_errors(writer, &parser.errors);
             }
         }
-        loop {
-            let tok = lexer.next_token();
-            if tok.token_type == TokenType::Eof {
-                break;
-            }
-            writer
-                .write_all(format!("{tok:?}\n").as_bytes())
-                .expect("failed to write token");
-        }
+    }
+}
+
+fn print_parser_errors<W: Write>(writer: &mut W, errors: &[String]) {
+    writer
+        .write_all(MONKEY_FACE.as_bytes())
+        .expect("failed to write monkey face");
+    writer
+        .write_all(b"Woops! We ran into some monkey business here!\n")
+        .expect("failed to write error header");
+    writer
+        .write_all(b" parser errors:\n")
+        .expect("failed to write error header");
+    for err in errors {
+        writer
+            .write_all(format!("\t{err}\n").as_bytes())
+            .expect("failed to write error");
     }
 }

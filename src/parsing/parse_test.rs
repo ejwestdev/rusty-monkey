@@ -190,6 +190,17 @@ mod tests {
         expression.token_literal()
     }
 
+    #[test]
+    fn test_grouped_expression_parsing() {
+        let input = "1 + (2 + 3) * 4;".to_string();
+        let lexer = Lexer::new(input);
+        let mut parser = Parser::new(lexer);
+        let program = Parser::parse_program(&mut parser)
+            .expect("parse_program returned None in test_grouped_expression_parsing");
+        check_parser_errors(&parser);
+        assert_eq!(program.string(), "(1 + ((2 + 3) * 4));");
+    }
+
     fn check_parser_errors(parser: &Parser) {
         let errors = &parser.errors;
         if errors.is_empty() {

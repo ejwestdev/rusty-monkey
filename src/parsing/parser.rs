@@ -49,6 +49,7 @@ impl Parser {
         parser.register_prefix(token::TokenType::Int, Parser::parse_integer_literal);
         parser.register_prefix(token::TokenType::True, Parser::parse_boolean);
         parser.register_prefix(token::TokenType::False, Parser::parse_boolean);
+        parser.register_prefix(token::TokenType::Lparen, Parser::parse_grouped_expression);
         parser.register_prefix(token::TokenType::Bang, Parser::parse_prefix_expression);
         parser.register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
         parser.register_infix(token::TokenType::Plus, Parser::parse_infix_expression);
@@ -132,6 +133,14 @@ impl Parser {
         Some(Expression::Boolean(
             parser.cur_tok.token_type == token::TokenType::True,
         ))
+    }
+    fn parse_grouped_expression(parser: &mut Parser) -> Option<Expression> {
+        parser.next_token();
+        let expr = parser.parse_expression(Precedence::Lowest)?;
+        if !Self::expect_peek(parser, token::TokenType::Rparen) {
+            return None;
+        }
+        Some(expr)
     }
     fn parse_prefix_expression(parser: &mut Parser) -> Option<Expression> {
         let operator = parser.cur_tok.literal.clone();

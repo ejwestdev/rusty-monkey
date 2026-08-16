@@ -66,7 +66,7 @@ impl Statement {
                 value.string()
             ),
             Statement::Return { .. } => "return".to_string(),
-            Statement::Expression { .. } => "expression".to_string(),
+            Statement::Expression { expression, .. } => format!("{};", expression.string()),
         }
     }
 }

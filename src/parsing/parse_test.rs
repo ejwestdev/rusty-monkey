@@ -201,6 +201,117 @@ mod tests {
         assert_eq!(program.string(), "(1 + ((2 + 3) * 4));");
     }
 
+    #[test]
+    fn test_if_expression() {
+        let input = "if (x < y) { x }";
+        let lexer = Lexer::new(input.to_string());
+        let mut parser = Parser::new(lexer);
+        let program = Parser::parse_program(&mut parser)
+            .expect("parse_program returned None in test_if_expression");
+        check_parser_errors(&parser);
+
+        assert_eq!(program.statements.len(), 1);
+        let Some(Statement::Expression {
+            expression,
+            token: _,
+        }) = program.statements.first()
+        else {
+            panic!(
+                "program.statements[0] is not Expression. got={:?}",
+                program.statements.first()
+            );
+        };
+        let Expression::If(if_expr) = expression else {
+            panic!("stmt.expression is not an If. got={expression:?}");
+        };
+
+        let Expression::Infix {
+            left,
+            operator,
+            right,
+        } = &if_expr.condition
+        else {
+            panic!(
+                "condition is not an Infix. got={:?}",
+                if_expr.condition
+            );
+        };
+        assert_eq!(operator, "<");
+
+        let Expression::Identifier(left_name) = &**left else {
+            panic!("condition.left is not an Identifier. got={left:?}");
+        };
+        assert_eq!(left_name, "x");
+        let Expression::Identifier(right_name) = &**right else {
+            panic!("condition.right is not an Identifier. got={right:?}");
+        };
+        assert_eq!(right_name, "y");
+
+        assert_eq!(if_expr.consequence.statements.len(), 1);
+        let Some(Statement::Expression {
+            expression: consequence,
+            token: _,
+        }) = if_expr.consequence.statements.first()
+        else {
+            panic!(
+                "Statements[0] is not Expression. got={:?}",
+                if_expr.consequence.statements.first()
+            );
+        };
+        let Expression::Identifier(name) = consequence else {
+            panic!("consequence expression is not an Identifier. got={consequence:?}");
+        };
+        assert_eq!(name, "x");
+
+        assert!(
+            if_expr.alternative.is_none(),
+            "exp.Alternative was not None. got={:?}",
+            if_expr.alternative
+        );
+    }
+
+    #[test]
+    fn test_if_else_expression() {
+        let input = "if (x < y) { x } else { y }";
+        let lexer = Lexer::new(input.to_string());
+        let mut parser = Parser::new(lexer);
+        let program = Parser::parse_program(&mut parser)
+            .expect("parse_program returned None in test_if_else_expression");
+        check_parser_errors(&parser);
+
+        assert_eq!(program.statements.len(), 1);
+        let Some(Statement::Expression {
+            expression,
+            token: _,
+        }) = program.statements.first()
+        else {
+            panic!(
+                "program.statements[0] is not Expression. got={:?}",
+                program.statements.first()
+            );
+        };
+        let Expression::If(if_expr) = expression else {
+            panic!("stmt.expression is not an If. got={expression:?}");
+        };
+
+        let alternative = if_expr.alternative.as_ref().expect("alternative is None");
+        assert_eq!(alternative.statements.len(), 1);
+        let Some(Statement::Expression {
+            expression: alternative_expr,
+            token: _,
+        }) = alternative.statements.first()
+        else {
+            panic!(
+                "alternative statement is not Expression. got={:?}",
+                alternative.statements.first()
+            );
+        };
+        let Expression::Identifier(name) = alternative_expr else {
+            panic!("alternative expression is not an Identifier. got={alternative_expr:?}");
+        };
+        assert_eq!(name, "y");
+    }
+
     fn check_parser_errors(parser: &Parser) {
         let errors = &parser.errors;
         if errors.is_empty() {

@@ -50,6 +50,7 @@ impl Parser {
         parser.register_prefix(token::TokenType::True, Parser::parse_boolean);
         parser.register_prefix(token::TokenType::False, Parser::parse_boolean);
         parser.register_prefix(token::TokenType::Lparen, Parser::parse_grouped_expression);
+        parser.register_prefix(token::TokenType::If, Parser::parse_if_expression);
         parser.register_prefix(token::TokenType::Bang, Parser::parse_prefix_expression);
         parser.register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
         parser.register_infix(token::TokenType::Plus, Parser::parse_infix_expression);
@@ -71,6 +72,12 @@ impl Parser {
     fn next_token(&mut self) {
         self.cur_tok = self.peek_tok.clone();
         self.peek_tok = self.lexer.next_token();
+    }
+    fn cur_token_is(&self, token_type: TokenType) -> bool {
+        self.cur_tok.token_type == token_type
+    }
+    fn peek_token_is(&self, token_type: TokenType) -> bool {
+        self.peek_token().token_type == token_type
     }
     fn peek_token(&self) -> token::Token {
         self.peek_tok.clone()
@@ -141,6 +148,47 @@ impl Parser {
             return None;
         }
         Some(expr)
+    }
+    fn parse_if_expression(parser: &mut Parser) -> Option<Expression> {
+        let token = parser.cur_tok.clone();
+        if !Self::expect_peek(parser, token::TokenType::Lparen) {
+            return None;
+        }
+        parser.next_token();
+        let condition = parser.parse_expression(Precedence::Lowest)?;
+        if !Self::expect_peek(parser, token::TokenType::Rparen) {
+            return None;
+        }
+        if !Self::expect_peek(parser, token::TokenType::Lbrace) {
+            return None;
+        }
+        let consequence = parser.parse_block_statement();
+        let mut alternative = None;
+        if parser.peek_token_is(token::TokenType::Else) {
+            parser.next_token();
+            if !Self::expect_peek(parser, token::TokenType::Lbrace) {
+                return None;
+            }
+            alternative = Some(parser.parse_block_statement());
+        }
+        Some(Expression::If(Box::new(ast::IfExpression {
+            token,
+            condition,
+            consequence,
+            alternative,
+        })))
+    }
+    fn parse_block_statement(&mut self) -> ast::BlockStatement {
+        let token = self.cur_tok.clone();
+        let mut statements = Vec::new();
+        self.next_token();
+        while !self.cur_token_is(token::TokenType::Rbrace) && !self.cur_token_is(token::TokenType::Eof) {
+            if let Some(stmt) = self.parse_statement() {
+                statements.push(stmt);
+            }
+            self.next_token();
+        }
+        ast::BlockStatement { token, statements }
     }
     fn parse_prefix_expression(parser: &mut Parser) -> Option<Expression> {
         let operator = parser.cur_tok.literal.clone();

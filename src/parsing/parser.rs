@@ -51,6 +51,7 @@ impl Parser {
         parser.register_prefix(token::TokenType::False, Parser::parse_boolean);
         parser.register_prefix(token::TokenType::Lparen, Parser::parse_grouped_expression);
         parser.register_prefix(token::TokenType::If, Parser::parse_if_expression);
+        parser.register_prefix(token::TokenType::Function, Parser::parse_function_literal);
         parser.register_prefix(token::TokenType::Bang, Parser::parse_prefix_expression);
         parser.register_prefix(token::TokenType::Minus, Parser::parse_prefix_expression);
         parser.register_infix(token::TokenType::Plus, Parser::parse_infix_expression);
@@ -189,6 +190,46 @@ impl Parser {
             self.next_token();
         }
         ast::BlockStatement { token, statements }
+    }
+    fn parse_function_literal(parser: &mut Parser) -> Option<Expression> {
+        let token = parser.cur_tok.clone();
+        if !Self::expect_peek(parser, token::TokenType::Lparen) {
+            return None;
+        }
+        let parameters = parser.parse_function_parameters()?;
+        if !Self::expect_peek(parser, token::TokenType::Lbrace) {
+            return None;
+        }
+        let body = parser.parse_block_statement();
+        Some(Expression::Function(Box::new(ast::FunctionLiteral {
+            token,
+            parameters,
+            body,
+        })))
+    }
+    fn parse_function_parameters(&mut self) -> Option<Vec<ast::Identifier>> {
+        let mut identifiers = Vec::new();
+        if self.peek_token_is(token::TokenType::Rparen) {
+            self.next_token();
+            return Some(identifiers);
+        }
+        self.next_token();
+        identifiers.push(ast::Identifier {
+            token: self.cur_tok.clone(),
+            value: self.cur_tok.literal.clone(),
+        });
+        while self.peek_token_is(token::TokenType::Comma) {
+            self.next_token();
+            self.next_token();
+            identifiers.push(ast::Identifier {
+                token: self.cur_tok.clone(),
+                value: self.cur_tok.literal.clone(),
+            });
+        }
+        if !Self::expect_peek(self, token::TokenType::Rparen) {
+            return None;
+        }
+        Some(identifiers)
     }
     fn parse_prefix_expression(parser: &mut Parser) -> Option<Expression> {
         let operator = parser.cur_tok.literal.clone();

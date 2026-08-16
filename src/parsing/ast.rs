@@ -73,6 +73,7 @@ pub enum Expression {
         right: Box<Expression>,
     },
     If(Box<IfExpression>),
+    Function(Box<FunctionLiteral>),
 }
 impl Expression {
     pub fn string(&self) -> String {
@@ -89,6 +90,7 @@ impl Expression {
                 right,
             } => format!("({} {operator} {})", left.string(), right.string()),
             Expression::If(expr) => expr.string(),
+            Expression::Function(expr) => expr.string(),
         }
     }
 }
@@ -101,6 +103,7 @@ impl Node for Expression {
             Expression::Prefix { right, .. } => right.token_literal(),
             Expression::Infix { left, .. } => left.token_literal(),
             Expression::If(expr) => expr.token_literal(),
+            Expression::Function(expr) => expr.token_literal(),
         }
     }
 }
@@ -168,5 +171,25 @@ impl BlockStatement {
 impl Node for BlockStatement {
     fn token_literal(&self) -> String {
         self.token.literal.clone()
+    }
+}
+#[derive(Debug)]
+pub struct FunctionLiteral {
+    pub token: token::Token,
+    pub parameters: Vec<Identifier>,
+    pub body: BlockStatement,
+}
+impl FunctionLiteral {
+    pub fn token_literal(&self) -> String {
+        self.token.literal.clone()
+    }
+    pub fn string(&self) -> String {
+        let params: Vec<String> = self.parameters.iter().map(Identifier::string).collect();
+        format!(
+            "{}({}) {}",
+            self.token_literal(),
+            params.join(", "),
+            self.body.string()
+        )
     }
 }

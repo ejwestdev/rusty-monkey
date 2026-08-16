@@ -71,10 +71,7 @@ mod tests {
     }
     #[test]
     fn test_parsing_prefix_expressions() {
-        let prefix_tests = vec![
-            ("!5;", "!", 5i64),
-            ("-15;", "-", 15i64),
-        ];
+        let prefix_tests = vec![("!5;", "!", 5i64), ("-15;", "-", 15i64)];
         for (input, expected_operator, expected_value) in prefix_tests {
             let lexer = Lexer::new(input.to_string());
             let mut parser = Parser::new(lexer);
@@ -231,10 +228,7 @@ mod tests {
             right,
         } = &if_expr.condition
         else {
-            panic!(
-                "condition is not an Infix. got={:?}",
-                if_expr.condition
-            );
+            panic!("condition is not an Infix. got={:?}", if_expr.condition);
         };
         assert_eq!(operator, "<");
 

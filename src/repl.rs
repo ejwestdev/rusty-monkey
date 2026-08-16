@@ -5,13 +5,18 @@ use std::io::Write;
 
 const PROMPT: &str = ">> ";
 
-const MONKEY_FACE: &str = r#"          __,__
-  .--.  .-"     "-.  .--.
- / .. \/  .-. .-.  \/ .. \
-| |  ' /   Y   Y   \  ' | |
- \  \  \ 0 | 0 /  /  /  /
-  \ '-.\.-"""""""-./.-' /
-   '-._'-.       .-'_.-'
+const MONKEY_FACE: &str = r#"
+            __,__
+   .--.  .-"     "-.  .--.
+  / .. \/  .-. .-.  \/ .. \
+ | |  '|  /   Y   \  |'  | |
+ | \   \  \ 0 | 0 /  /   / |
+  \ '- ,\.-"`` ``"-./, -' /
+   `'-' /_   ^ ^   _\ '-'`
+       |  \._   _./  |
+       \   \ `~` /   /
+        '._ '-=-' _.'
+           '~---~'`
 "#;
 
 pub fn start<R: BufRead, W: Write>(reader: &mut R, writer: &mut W) {
@@ -47,9 +52,6 @@ fn print_parser_errors<W: Write>(writer: &mut W, errors: &[String]) {
         .write_all(MONKEY_FACE.as_bytes())
         .expect("failed to write monkey face");
     writer
-        .write_all(b"Woops! We ran into some monkey business here!\n")
-        .expect("failed to write error header");
-    writer
         .write_all(b" parser errors:\n")
         .expect("failed to write error header");
     for err in errors {
@@ -58,3 +60,4 @@ fn print_parser_errors<W: Write>(writer: &mut W, errors: &[String]) {
             .expect("failed to write error");
     }
 }
+

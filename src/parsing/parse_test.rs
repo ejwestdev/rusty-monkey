@@ -306,6 +306,97 @@ mod tests {
         assert_eq!(name, "y");
     }
 
+    #[test]
+    fn test_function_literal_parsing() {
+        let input = "fn(x, y) { x + y; }";
+        let lexer = Lexer::new(input.to_string());
+        let mut parser = Parser::new(lexer);
+        let program = Parser::parse_program(&mut parser)
+            .expect("parse_program returned None in test_function_literal_parsing");
+        check_parser_errors(&parser);
+
+        assert_eq!(program.statements.len(), 1);
+        let Some(Statement::Expression {
+            expression,
+            token: _,
+        }) = program.statements.first()
+        else {
+            panic!(
+                "program.statements[0] is not Expression. got={:?}",
+                program.statements.first()
+            );
+        };
+        let Expression::Function(function_literal) = expression else {
+            panic!("stmt.expression is not a Function. got={expression:?}");
+        };
+
+        assert_eq!(function_literal.parameters.len(), 2);
+        assert_eq!(function_literal.parameters[0].value(), "x");
+        assert_eq!(function_literal.parameters[1].value(), "y");
+
+        assert_eq!(function_literal.body.statements.len(), 1);
+        let Some(Statement::Expression {
+            expression: body_expr,
+            token: _,
+        }) = function_literal.body.statements.first()
+        else {
+            panic!(
+                "body statement is not Expression. got={:?}",
+                function_literal.body.statements.first()
+            );
+        };
+        let Expression::Infix {
+            left,
+            operator,
+            right,
+        } = body_expr
+        else {
+            panic!("body expression is not an Infix. got={body_expr:?}");
+        };
+        assert_eq!(operator, "+");
+
+        let Expression::Identifier(left_name) = &**left else {
+            panic!("body left is not an Identifier. got={left:?}");
+        };
+        assert_eq!(left_name, "x");
+        let Expression::Identifier(right_name) = &**right else {
+            panic!("body right is not an Identifier. got={right:?}");
+        };
+        assert_eq!(right_name, "y");
+    }
+
+    #[test]
+    fn test_function_parameter_parsing() {
+        let tests = vec![
+            ("fn() {};", vec![] as Vec<&str>),
+            ("fn(x) {};", vec!["x"]),
+            ("fn(x, y, z) {};", vec!["x", "y", "z"]),
+        ];
+        for (input, expected_params) in tests {
+            let lexer = Lexer::new(input.to_string());
+            let mut parser = Parser::new(lexer);
+            let program = Parser::parse_program(&mut parser)
+                .expect("parse_program returned None in test_function_parameter_parsing");
+            check_parser_errors(&parser);
+
+            let Some(Statement::Expression {
+                expression,
+                token: _,
+            }) = program.statements.first()
+            else {
+                panic!("program.statements is empty");
+            };
+            let Expression::Function(function_literal) = expression else {
+                panic!("stmt.expression is not a Function. got={expression:?}");
+            };
+
+            assert_eq!(function_literal.parameters.len(), expected_params.len());
+            for (i, expected) in expected_params.iter().enumerate() {
+                assert_eq!(function_literal.parameters[i].value(), expected);
+            }
+        }
+    }
+
     fn check_parser_errors(parser: &Parser) {
         let errors = &parser.errors;
         if errors.is_empty() {
